@@ -12,4 +12,5 @@ module.exports = {
     DELIVERY_ID: "/delivery/:id",
     DELIVERY_EDIT_ID: "/delivery/edit/:id",
     TRANSACTION: "/transactions",
+    INVENTORY: "/inventories",
 }
