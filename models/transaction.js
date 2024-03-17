@@ -8,7 +8,12 @@ const transactionSchema = new mongoose.Schema({
             required: [true, "Service required"],
             ref: RESOURCE.SERVICE,
         }
-    ]
+    ],
+    date: {
+        type: Date,
+        required: [true, "Please enter a date"],
+        default: Date.now(),
+    }
 });
 
 module.exports = mongoose.model(RESOURCE.TRANSACTION, transactionSchema)
