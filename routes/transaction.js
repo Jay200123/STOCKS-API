@@ -7,6 +7,11 @@ const transactionRoutes = [
     {
         method: METHOD.GET,
         path: PATH.TRANSACTION,
+        handler: transactionController.getAllTransactions,
+    },
+    {
+        method: METHOD.POST,
+        path: PATH.TRANSACTION,
         handler: transactionController.createTransaction,
     },
 ]
