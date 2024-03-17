@@ -26,17 +26,6 @@ exports.getOneDeliveryData = async (id) =>{
 }
 
 exports.createDeliveryData = async(req, res)=>{
-    const duplicateDelivery = await Delivery.findOne({
-        company_name: req.body.company_name,
-    })
-    .collation({
-        locale:"en",
-    })
-    .lean()
-    .exec()
-
-    if(duplicateDelivery) throw new ErrorHandler("Error Duplicate delivery company name");
-
     const delivery = await Delivery.create({
         ...req.body,
     });
