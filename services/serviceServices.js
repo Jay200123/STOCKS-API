@@ -21,6 +21,8 @@ exports.getOneServiceData = async (id) =>{
         throw new ErrorHandler(`Service not Found with ${id}`);
     };
 
+    console.log(service);
+
     return service;
 }
 
