@@ -38,6 +38,7 @@ exports.createProductData = async(req, res)=>{
 
     const product = await Product.create({
         ...req.body,
+        current_volume: req.body.product_volume
     });
 
     return product;
