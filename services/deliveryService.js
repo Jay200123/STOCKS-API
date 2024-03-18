@@ -30,9 +30,11 @@ exports.createDeliveryData = async(req, res)=>{
         ...req.body,
     });
 
-    const product = await Product.findById(req.body.product);
-    product.quantity += req.body.quantity;
-    await product.save();
+    for(const productId of delivery.product){
+        const product = await Product.findById(productId);
+        product.quantity += req.body.quantity;
+        await product.save();
+    }
 
     return delivery;
 };
