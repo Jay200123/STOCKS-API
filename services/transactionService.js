@@ -3,9 +3,6 @@ const Service = require("../models/service");
 const Product = require("../models/product");
 const Inventory = require("../models/inventory");
 const ErrorHandler = require("../utils/errorHandler");
-const SuccessHandler = require("../utils/successHandler");
-const mongoose = require("mongoose");
-const product = require("../models/product");
 
 exports.getAllTransactionData = async () => {
   const transaction = await Transaction.find()
@@ -22,8 +19,20 @@ exports.createTransactionData = async (req, res) => {
   });
 
   try {
-    for (const serviceId of transaction.service) {
-      const service = await Service.findById(serviceId).populate({
+    const serviceIds = transaction.service;
+
+    const serviceCount = await Service.find({ _id: { $in: serviceIds } })
+      .lean()
+      .exec();
+
+    if (serviceCount.length !== serviceIds.length) {
+      throw new ErrorHandler(`No services were found`);
+    }
+
+    for (const serviceId of serviceCount) {
+      const services = serviceId?._id;
+
+      const service = await Service.findById(services).populate({
         path: "product",
         select:
           "_id product_name current_volume product_session product_volume quantity",
@@ -47,24 +56,31 @@ exports.createTransactionData = async (req, res) => {
         );
 
         if (productStock.current_volume === 0) {
-          const restock = await Product.findById(product._id);
-          restock.current_volume = product.product_volume;
-          restock.quantity - 1;
-          restock.save();
+          productStock.current_volume = product.product_volume;
+          productStock.quantity -= 1;
+          await productStock.save();
         }
 
+        if(productStock.current_volume < 1000){
+          productStock.measurement = "ml"
+        }else{
+          productStock.measurement = "Liter"
+        }
+        await productStock.save();
 
-        if(productStock.quantity === 0){
-          throw new ErrorHandler(`${productStock.product_name} is out of stock`);
+        if (productStock.quantity === 0) {
+          throw new ErrorHandler(
+            `${productStock.product_name} is out of stock`
+          );
         }
 
         const inventory = await Inventory.create({
           transaction: transaction._id,
-          service: transaction.service,
-          product: service._id,
+          service: service._id,
+          product: product._id,
           product_consume: product.product_session,
-          remained_volume: product.current_volume,
-          remained_quantity: product.quantity,
+          remained_volume: newVolume,
+          remained_quantity: productStock.quantity,
         });
       }
     }
