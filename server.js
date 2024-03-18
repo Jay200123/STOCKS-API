@@ -5,11 +5,18 @@ require("dotenv").config({
     path:"./config/.env"
 });
 
+const Delivery = require("./models/delivery");
+const Inventory = require("./models/inventory");
+const Product = require("./models/product");
+const Service = require("./models/service");
+const Transaction = require("./models/transaction");
+
 const { STATUSCODE } = require("./constants/index");
 const products = require("./routes/product");
 const delivery = require("./routes/delivery");
 const services = require("./routes/service");
 const transaction = require("./routes/transaction");
+const inventory = require("./routes/inventory");
 
 const connectDB = require("./config/connect");
 connectDB();
@@ -23,12 +30,30 @@ app.use("/api/v1",
  delivery,
  services,
  transaction,
+ inventory,
   );
 
 app.get("/", (req, res)=>{
     data = { message:"Testing backend data!" }
     res.status(STATUSCODE.SUCCESS).json(data);
 })
+
+app.get('/truncate', async (req, res) => {
+    try {
+        // await Delivery.deleteMany({});
+        await Inventory.deleteMany({});
+        // await Product.deleteMany({});
+        // await Service.deleteMany({});
+        await Transaction.deleteMany({});
+
+      const message = 'All collections truncated successfully';
+      res.status(STATUSCODE.SUCCESS).json({ message });
+    } catch (error) {
+      console.error('Error truncating collections:', error);
+      const message = 'Error truncating collections';
+      res.status(STATUSCODE.SERVER_ERROR).json({ message });
+    }
+  });
 
 
 app.listen(process.env.PORT, ()=>{
