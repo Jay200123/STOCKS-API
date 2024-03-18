@@ -31,6 +31,11 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    measurement: {
+        type: String,
+        enum:["Liter", "ml"], 
+        default: "ml",
+    }
 });
 
 
