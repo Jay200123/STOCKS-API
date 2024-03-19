@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const { RESOURCE } = require("../constants/index");
 
 const transactionSchema = new mongoose.Schema({
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true, "User field required"],
+        ref: RESOURCE.USER,
+    },
     service: [
         {
             type: mongoose.Schema.Types.ObjectId,
