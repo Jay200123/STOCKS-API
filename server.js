@@ -17,6 +17,7 @@ const delivery = require("./routes/delivery");
 const services = require("./routes/service");
 const transaction = require("./routes/transaction");
 const inventory = require("./routes/inventory");
+const user = require("./routes/user");
 
 const connectDB = require("./config/connect");
 connectDB();
@@ -31,6 +32,7 @@ app.use("/api/v1",
  services,
  transaction,
  inventory,
+ user,
   );
 
 app.get("/", (req, res)=>{
@@ -40,10 +42,10 @@ app.get("/", (req, res)=>{
 
 app.get('/truncate', async (req, res) => {
     try {
-        // await Delivery.deleteMany({});
+        await Delivery.deleteMany({});
         await Inventory.deleteMany({});
-        // await Product.deleteMany({});
-        // await Service.deleteMany({});
+        await Product.deleteMany({});
+        await Service.deleteMany({});
         await Transaction.deleteMany({});
 
       const message = 'All collections truncated successfully';
