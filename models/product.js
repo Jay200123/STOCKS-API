@@ -35,6 +35,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         enum:["Liter", "ml"], 
         default: "ml",
+    },
+    type:{
+        type: String,
+        enum: ["Hair", "Face", "Hands"],
     }
 });
 
