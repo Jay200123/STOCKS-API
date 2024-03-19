@@ -7,7 +7,7 @@ const serviceSchema = new mongoose.Schema({
         required: [true, "Service name field required"],
         maxLength: [60, "Service name must not exceed to 60 characters"]
     },
-    service_price:{
+    service_price: {
         type: Number,
         required: [true, "Service price field required"],
         default: 0,
@@ -18,7 +18,11 @@ const serviceSchema = new mongoose.Schema({
             required:[true, "Product field required"],
             ref: RESOURCE.PRODUCT, 
         }
-    ]
+    ],
+    type: {
+        type: String,
+        enum:["Hair","Eyelash","Hands"]
+    }
 });
 
 module.exports = mongoose.model(RESOURCE.SERVICE, serviceSchema)
