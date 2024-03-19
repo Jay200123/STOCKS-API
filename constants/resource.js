@@ -5,4 +5,5 @@ module.exports = {
     DELIVERY: "delivery",
     TRANSACTION: "transaction",
     INVENTORY:"inventory",
+    USER:"user",
 }
