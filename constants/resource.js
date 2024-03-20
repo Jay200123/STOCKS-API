@@ -6,4 +6,5 @@ module.exports = {
     TRANSACTION: "transaction",
     INVENTORY:"inventory",
     USER:"user",
+    EQUIPMENT:"/equipment",
 }
