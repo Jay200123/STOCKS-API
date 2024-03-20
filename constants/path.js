@@ -14,4 +14,7 @@ module.exports = {
     TRANSACTION: "/transactions",
     INVENTORY: "/inventories",
     USER:"/users",
+    EQUIPMENT:"/equipments",
+    EQUIPMENT_ID:"/equipment/:id",
+    EQUIPMENT_EDIT_ID:"/equipment/edit/:id",
 }
