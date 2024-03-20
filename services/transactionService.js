@@ -22,24 +22,6 @@ exports.createTransactionData = async (req, res) => {
   try {
     const serviceIds = transaction.service;
 
-    // const data = await Transaction.findById(transaction?._id)
-    // .populate({
-    //   path:"user",
-    //   select: "name description"
-    // })
-    // .collation({ locale:"en"})
-    // .lean()
-    // .exec()
-
-    // const description = user?.user?.description
-    // console.log(description);
-
-    // if(description?.includes("Long Hair")){
-    //   console.log("Shabu pa boss")
-    // }else if(description?.includes("Short Hair")){
-    //   console.log("Dora ka boss")
-    // }
-
     const serviceCount = await Service.find({ _id: { $in: serviceIds } })
       .lean()
       .exec();
@@ -51,48 +33,55 @@ exports.createTransactionData = async (req, res) => {
     for (const serviceId of serviceCount) {
       const services = serviceId?._id;
 
-      const service = await Service.findById(services).populate({
-        path: "product",
-        select:
-          "_id product_name current_volume product_session product_volume quantity",
-      });
+      const service = await Service.findById(services)
+        .populate({
+          path: "product",
+          select:
+            "_id product_name current_volume product_session product_volume quantity",
+        })
+        .collation({ locale: "en" })
+        .lean()
+        .exec();
 
       if (!service) {
         throw new ErrorHandler(`Service not found`);
       }
 
       for (const product of service.product) {
-        const newVolume = product.current_volume - product.product_session;
-        let vol_desc; // Define vol_desc in a scope that covers both if blocks
+        const transacId = transaction?._id;
+        const customer = await Transaction.findById(transacId)
+          .populate({
+            path: "user",
+            select: "name description",
+          })
+          .collation({ locale: "en" })
+          .lean()
+          .exec();
 
-        if (service?.type?.includes("Hair")) {
-          const transacId = transaction?._id;
-          const customer = await Transaction.findById(transacId)
-            .populate({
-              path: "user",
-              select: "name description",
-            })
-            .collation({ locale: "en" })
-            .lean()
-            .exec();
+        const description = customer?.user?.description;
+        let newVolume = product.current_volume - product.product_session;
+        let consumeSession = product?.product_session;
 
-          const description = customer?.user?.description;
-
-          if (description?.includes("Long Hair")) {
-            vol_desc =
-              product.current_volume * 0.2 * 10 - product.product_session;
-            console.log(vol_desc);
-          }
+        if (
+          description?.includes("Long Hair") &&
+          service?.type?.includes("Hair")
+        ) {
+          let long_vol = product.product_volume * 0.2;
+          consumeSession = long_vol;
+          newVolume = product.current_volume - long_vol;
+        } else if (
+          description?.includes("Short Hair") &&
+          service?.type?.includes("Hair")
+        ) {
+          let short_vol = (product.product_volume * 0.5) / 10;
+          consumeSession = short_vol;
+          newVolume = product.current_volume - short_vol;
         }
-
-        const volume_val = service?.type?.includes("Hair")
-          ? vol_desc
-          : newVolume;
 
         const productStock = await Product.findByIdAndUpdate(
           product._id,
           {
-            current_volume: volume_val,
+            current_volume: newVolume,
           },
           {
             new: true,
@@ -110,6 +99,7 @@ exports.createTransactionData = async (req, res) => {
         } else {
           productStock.measurement = "Liter";
         }
+
         await productStock.save();
 
         if (productStock.quantity === 0) {
@@ -122,10 +112,12 @@ exports.createTransactionData = async (req, res) => {
           transaction: transaction._id,
           service: service._id,
           product: product._id,
-          product_consume: product.product_session,
+          product_consume: consumeSession,
           remained_volume: newVolume,
           remained_quantity: productStock.quantity,
         });
+
+        console.log(inventory);
       }
     }
   } catch (err) {
