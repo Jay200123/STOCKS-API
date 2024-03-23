@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const { RESOURCE } = require("../constants/index");
 
 const inventorySchema = new mongoose.Schema({
-    transaction: {
-        type: mongoose.Schema.Types.ObjectId,
-        required:[true, "Transaction field required"],
-        ref: RESOURCE.TRANSACTION,   
-    },
-    service: {
+  transaction: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "Transaction field required"],
+    ref: RESOURCE.TRANSACTION,
+  },
+  service: {
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "Service field required"],
     ref: RESOURCE.SERVICE,
@@ -21,14 +21,22 @@ const inventorySchema = new mongoose.Schema({
     type: Number,
     required: [true, "Consumed product volume required"],
   },
+  old_volume: {
+    type: Number,
+    required: [true, "Old volume required"],
+  },
   remained_volume: {
     type: Number,
     required: [true, "Remaining product volume required"],
   },
-  remained_quantity:{
+  old_quantity: {
     type: Number,
-    required:[true, "Product Remaining Quantity Required"],
-  }
+    required: [true, "product past quantity required"],
+  },
+  remained_quantity: {
+    type: Number,
+    required: [true, "Product Remaining Quantity Required"],
+  },
 });
 
 module.exports = mongoose.model(RESOURCE.INVENTORY, inventorySchema);
