@@ -49,14 +49,44 @@ desc1 = "Short Hair"
 // const tst = 100 * 0.5 / 10 * 10;
 // console.log(tst);
 
-let product_vol = 1000;
+// let product_vol = 1000;
 
-let long_vol = product_vol * 0.5 / 10;
-console.log(long_vol);
-let current_volume = 700;
-// console.log(long_vol)
-let newVolume = current_volume - long_vol;
-console.log(newVolume);
+// let long_vol = product_vol * 0.5 / 10;
+// console.log(long_vol);
+// let current_volume = 700;
+// // console.log(long_vol)
+// let newVolume = current_volume - long_vol;
+// console.log(newVolume);
 
-const test2 = 100 * 0.5 / 10;
-console.log("Test mo ulo mo", test2);
+// const test2 = 100 * 0.5 / 10;
+// console.log("Test mo ulo mo", test2);
+
+// console.log(1000 * 0.2);
+
+// let result = value1 - value2;
+
+let value1 = 200;
+let value2 = 200;
+
+let result = value1 - value2;
+
+if (result > 0) {
+  console.log("test");
+} else {
+  console.log("test 2");
+}
+
+if(value1 > value2){
+    console.log("pak u")
+}
+
+let newVolume = 300;
+let oldVolume = 300;
+
+
+// console.log(200 - 200);
+
+// if(newVolume && oldVolume){
+//     console.log("testing values!")
+// }
+// if ung babawas na volume is greater than remaining gagawin is 
