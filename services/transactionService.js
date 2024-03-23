@@ -59,23 +59,19 @@ exports.createTransactionData = async (req, res) => {
           .exec();
 
         const description = customer?.user?.description;
-        let newVolume = product.current_volume - product.product_session;
-        let consumeSession = product?.product_session;
+        let consumeSession = product.product_session;
 
-        if (
-          description?.includes("Long Hair") &&
-          service?.type?.includes("Hair")
-        ) {
-          let long_vol = product.product_volume * 0.2;
+        const isLongHair =
+          description?.includes("Long Hair") && service?.type?.includes("Hair");
+
+        let newVolume;
+
+        if (isLongHair) {
+          const long_vol = product.product_volume * 0.2;
           consumeSession = long_vol;
           newVolume = product.current_volume - long_vol;
-        } else if (
-          description?.includes("Short Hair") &&
-          service?.type?.includes("Hair")
-        ) {
-          let short_vol = (product.product_volume * 0.5) / 10;
-          consumeSession = short_vol;
-          newVolume = product.current_volume - short_vol;
+        } else {
+          newVolume = product.current_volume - consumeSession;
         }
 
         const productStock = await Product.findByIdAndUpdate(
@@ -88,13 +84,26 @@ exports.createTransactionData = async (req, res) => {
           }
         );
 
-        if (productStock.current_volume === 0) {
-          productStock.current_volume = product.product_volume;
-          productStock.quantity -= 1;
-          await productStock.save();
+        let restock = (productStock.current_volume =
+          productStock.product_volume);
+        let reducedQuantity = (productStock.quantity -= 1);
+
+        const isEmpty = consumeSession - newVolume == 0;
+        if (isEmpty) {
+          restock;
+          reducedQuantity;
         }
 
-        if (productStock.current_volume < 1000) {
+        const isLeft = consumeSession > newVolume;
+        if (isLeft) {
+          restock;
+          reducedQuantity;
+          const leftVolume = consumeSession * 0.5;
+          newVolume = productStock.current_volume - leftVolume;
+        }
+
+        const isMeasured = productStock.current_volume < 1000;
+        if (isMeasured) {
           productStock.measurement = "ml";
         } else {
           productStock.measurement = "Liter";
@@ -113,11 +122,11 @@ exports.createTransactionData = async (req, res) => {
           service: service._id,
           product: product._id,
           product_consume: consumeSession,
+          old_volume: product.current_volume,
           remained_volume: newVolume,
-          remained_quantity: productStock.quantity,
+          old_quantity: product.quantity,
+          remained_quantity: reducedQuantity,
         });
-
-        console.log(inventory);
       }
     }
   } catch (err) {
