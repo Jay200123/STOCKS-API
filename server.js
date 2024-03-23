@@ -42,10 +42,10 @@ app.get("/", (req, res)=>{
 
 app.get('/truncate', async (req, res) => {
     try {
-        await Delivery.deleteMany({});
+        // await Delivery.deleteMany({});
+        // await Product.deleteMany({});
+        // await Service.deleteMany({});
         await Inventory.deleteMany({});
-        await Product.deleteMany({});
-        await Service.deleteMany({});
         await Transaction.deleteMany({});
 
       const message = 'All collections truncated successfully';
