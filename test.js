@@ -90,3 +90,12 @@ let oldVolume = 300;
 //     console.log("testing values!")
 // }
 // if ung babawas na volume is greater than remaining gagawin is 
+const test = "completed";
+
+const status = test == "cancelled";
+
+if(status){
+  console.log("test!")
+}else{
+  console.log("test 2")
+}
