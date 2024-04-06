@@ -37,6 +37,10 @@ const inventorySchema = new mongoose.Schema({
     type: Number,
     required: [true, "Product Remaining Quantity Required"],
   },
+  used_quantity: {
+    type: Number,
+    default: 0,
+  },
 });
 
 module.exports = mongoose.model(RESOURCE.INVENTORY, inventorySchema);
