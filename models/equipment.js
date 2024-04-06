@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { RESOURCE } = require("../constants/index");
 
-const equipmentSchema = new mongoose.model({
+const equipmentSchema = new mongoose.Schema({
   equipment_name: {
     type: String,
     required: [true, "Equipment name required"],
@@ -17,10 +17,16 @@ const equipmentSchema = new mongoose.model({
     required:[true, "Equipment price required"],
     default: 0,
   },
-  isLost: {
-    type: Boolean,
-    default: false,
+  quantity:{
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  status: {
+    type: String,
+    enum:["Available", "Missing"],
+    default: "Available",
   }
 });
 
-module.exports = mongoose.model(equipmentSchema, RESOURCE.EQUIPMENT);
+module.exports = mongoose.model(RESOURCE.EQUIPMENT, equipmentSchema);
