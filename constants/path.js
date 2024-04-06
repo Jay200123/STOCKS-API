@@ -17,4 +17,7 @@ module.exports = {
     EQUIPMENT:"/equipments",
     EQUIPMENT_ID:"/equipment/:id",
     EQUIPMENT_EDIT_ID:"/equipment/edit/:id",
+    LOGBOOK:"/logbooks",
+    LOGBOOK_ID:"/logbook/:id",
+    LOGBOOK_EDIT_ID:"/logbook/edit/:id",
 }
