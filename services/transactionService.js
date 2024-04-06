@@ -84,20 +84,23 @@ exports.createTransactionData = async (req, res) => {
           }
         );
 
-        let restock = (productStock.current_volume =
-          productStock.product_volume);
-        let reducedQuantity = (productStock.quantity -= 1);
-
-        const isEmpty = consumeSession - newVolume == 0;
+        let restock;
+        let reducedQuantity = product.quantity;
+        let usedQty = 0;
+        let emptyVolume = newVolume - consumeSession;
+        
+        const isEmpty = emptyVolume === 0;
         if (isEmpty) {
-          restock;
-          reducedQuantity;
+          restock = (productStock.current_volume = productStock.product_volume);
+          reducedQuantity = (productStock.quantity -= 1);
+          usedQty = 1;
         }
 
         const isLeft = consumeSession > newVolume;
         if (isLeft) {
-          restock;
-          reducedQuantity;
+          restock = (productStock.current_volume = productStock.product_volume);
+          reducedQuantity = (productStock.quantity -= 1);
+          usedQty = 1;
           const leftVolume = consumeSession * 0.5;
           newVolume = productStock.current_volume - leftVolume;
         }
@@ -111,7 +114,8 @@ exports.createTransactionData = async (req, res) => {
 
         await productStock.save();
 
-        if (productStock.quantity === 0) {
+        const outStock = productStock.quantity === 0;
+        if (outStock) {
           throw new ErrorHandler(
             `${productStock.product_name} is out of stock`
           );
@@ -126,6 +130,7 @@ exports.createTransactionData = async (req, res) => {
           remained_volume: newVolume,
           old_quantity: product.quantity,
           remained_quantity: reducedQuantity,
+          used_quantity: usedQty,
         });
       }
     }
