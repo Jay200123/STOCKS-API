@@ -4,7 +4,8 @@ module.exports = {
     STOCK: "stock",
     DELIVERY: "delivery",
     TRANSACTION: "transaction",
-    INVENTORY:"inventory",
-    USER:"user",
-    EQUIPMENT:"/equipment",
+    INVENTORY: "inventory",
+    USER: "user",
+    EQUIPMENT: "equipment",
+    LOGBOOK: "logbook",
 }
