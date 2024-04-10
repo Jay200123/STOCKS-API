@@ -8,4 +8,5 @@ module.exports = {
     USER: "user",
     EQUIPMENT: "equipment",
     LOGBOOK: "logbook",
+    REPORT: "report",
 }
