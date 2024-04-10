@@ -17,14 +17,24 @@ const equipmentSchema = new mongoose.Schema({
     required:[true, "Equipment price required"],
     default: 0,
   },
-  quantity:{
+  quantity: {
     type: Number,
     required: false,
     default: 0,
   },
+  missing_qty: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  damage_qty: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   status: {
     type: String,
-    enum:["Available", "Missing"],
+    enum:["Available", "Not Available"],
     default: "Available",
   }
 });
