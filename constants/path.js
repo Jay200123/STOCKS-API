@@ -20,4 +20,7 @@ module.exports = {
     LOGBOOK:"/logbooks",
     LOGBOOK_ID:"/logbook/:id",
     LOGBOOK_EDIT_ID:"/logbook/edit/:id",
+    REPORTS: "/reports",
+    REPORT_ID: "/report/:id",
+    REPORT_EDIT_ID: "/report/edit/:id",
 }
