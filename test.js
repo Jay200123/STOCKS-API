@@ -99,3 +99,12 @@ if(status){
 }else{
   console.log("test 2")
 }
+
+const productVolume = 1000;
+
+const dateToday = new Date(Date.now());
+const formattedDate = dateToday.toLocaleDateString(); // Format the date
+console.log(formattedDate);
+
+const currentDate = new Date();
+console.log(currentDate) // Create a new Date object representing the current date and time
