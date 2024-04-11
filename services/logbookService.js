@@ -51,8 +51,8 @@ exports.createLogsData = async (req, res) => {
   });
 
   try {
-    const newBorrowed = log?.equipment?.map((r) => {
-      return r;
+    const newBorrowed = log?.equipment?.map((equipment) => {
+      return equipment;
     });
 
     for (const equipment of newBorrowed) {
@@ -107,47 +107,68 @@ exports.updateLogsData = async (req, res, id) => {
     .lean()
     .exec();
 
-  const newEquipment = updateLogBook?.equipment?.map((e) => {
-    return e;
-  });
+  try {
+    const newEquipment = updateLogBook?.equipment?.map((equipment) => {
+      return equipment;
+    });
 
-  for (const equipmentBorrowed of newEquipment) {
-    const { equipment, missing_quantity, damage_quantity } = equipmentBorrowed;
+    for (const equipmentBorrowed of newEquipment) {
+      const {
+        equipment,
+        borrow_quantity,
+        missing_quantity,
+        damage_quantity,
+        status,
+      } = equipmentBorrowed;
 
-    const equipmentId = equipment;
-    const newEquipment = await Equipment.findById(equipmentId).lean().exec();
-
-    const { missing_qty, damage_qty } = newEquipment;
-
-    let newMissingQty = missing_quantity + missing_qty;
-    let newDamageQty = damage_quantity + damage_qty;
-
-    const updateEquipment = await Equipment.findByIdAndUpdate(
-      equipmentId,
-      {
-        missing_qty: newMissingQty,
-        damage_qty: newDamageQty,
-      },
-      {
-        new: true,
-        runValidators: true,
+      if (
+        missing_quantity > borrow_quantity ||
+        damage_quantity > borrow_quantity
+      ) {
+        throw new ErrorHandler(
+          "Missing or damage quantity cannot exceed borrow quantity"
+        );
       }
-    );
 
-    const isMissing = equipmentBorrowed?.status == "Missing";
-    const isDamage = equipmentBorrowed?.status == "Damage";
-    const isMissingAndDamage = equipmentBorrowed?.status == "Damage && Missing";
+      const equipmentId = equipment;
+      const newEquipment = await Equipment.findById(equipmentId).lean().exec();
 
-    if(isMissing || isDamage || isMissingAndDamage){
-      const report = await Report.create({
-        user: updateLogBook?.user,
-        equipment: equipmentId,
-        date_missing: dateToday,
-        quantity_missing: newMissingQty,
-        damage_quantity: newDamageQty,
-      });
+      let { missing_qty, damage_qty } = newEquipment;
+
+      let newMissingQty = (missing_qty = missing_quantity);
+      let newDamageQty = (damage_qty = damage_quantity);
+
+      const updateEquipment = await Equipment.findByIdAndUpdate(
+        equipmentId,
+        {
+          missing_qty: newMissingQty,
+          damage_qty: newDamageQty,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      const isMissing = status === "Missing" && missing_quantity >= 1;
+      const isDamage = status === "Damage" && damage_quantity >= 1;
+      const isMissingAndDamage =
+        status === "Damage && Missing" &&
+        missing_quantity >= 1 &&
+        damage_quantity >= 1;
+
+      if (isMissing || isDamage || isMissingAndDamage) {
+        const report = await Report.create({
+          user: updateLogBook?.user,
+          equipment: equipmentId,
+          date_missing: dateToday,
+          quantity_missing: newMissingQty,
+          damage_quantity: newDamageQty,
+        });
+      }
     }
-
+  } catch (err) {
+    throw new ErrorHandler(err);
   }
   return updateLogBook;
 };
