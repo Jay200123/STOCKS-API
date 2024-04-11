@@ -16,7 +16,7 @@ const LogbookSchema = new mongoose.Schema({
       },
       borrow_quantity: {
         type: Number,
-        required: true,
+        required: [true, "Borrowed Equipment Quantity required"],
         default: 0,
       },
       missing_quantity: {
@@ -31,19 +31,19 @@ const LogbookSchema = new mongoose.Schema({
       },
       status: {
         type: String,
-        enum: ["Found","Missing","Damage", "Damage & Missing"],
+        enum: ["Found", "Missing", "Damage", "Damage & Missing"],
         default: "Found",
-      }
+      },
     },
   ],
   date_borrowed: {
     type: Date,
-    required: [true, "date borrowed required"],
+    reqiuired: false,
     default: Date.now(),
   },
   time_borrowed: {
     type: String,
-    default: function() {
+    default: function () {
       const currentTime = new Date();
       return currentTime.toLocaleTimeString([], { hour12: true });
     },
@@ -58,10 +58,15 @@ const LogbookSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Borrowed", "Returned"],
+    enum: [
+      "Borrowed",
+      "Returned",
+      "Returned With Missing",
+      "Returned With Damage",
+      "Returned Damage & Missing",
+    ],
     default: "Borrowed",
   },
 });
-
 
 module.exports = mongoose.model(RESOURCE.LOGBOOK, LogbookSchema);
