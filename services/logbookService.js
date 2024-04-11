@@ -157,13 +157,26 @@ exports.updateLogsData = async (req, res, id) => {
         missing_quantity >= 1 &&
         damage_quantity >= 1;
 
+      const insertDate = isMissing || isMissingAndDamage ? dateToday : "";
+
+      let statusReport = "";
+
+      if(isMissing){
+        statusReport = "Missing";
+      }else if(isDamage){
+        statusReport = "Damage"
+      }else if(isMissingAndDamage){
+        statusReport = "Missing & Damage"
+      }
+
       if (isMissing || isDamage || isMissingAndDamage) {
         const report = await Report.create({
           user: updateLogBook?.user,
           equipment: equipmentId,
-          date_missing: dateToday,
+          date_missing: insertDate,
           quantity_missing: newMissingQty,
           damage_quantity: newDamageQty,
+          status: statusReport,
         });
       }
     }
