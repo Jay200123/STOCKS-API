@@ -14,7 +14,7 @@ const reportSchema = new mongoose.Schema({
   },
   date_missing: {
     type: Date,
-    required: [true, "Date missing required"],
+    required: false,
   },
   date_found: {
     type: Date,
@@ -36,8 +36,7 @@ const reportSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Missing", "Damage", "Partially Found", "Found"],
-    default: "Missing",
+    enum: ["Missing", "Damage", "Partially Found", "Found", "Missing & Damage"],
   },
   input_qty: {
     type: Number,
