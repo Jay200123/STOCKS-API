@@ -23,4 +23,5 @@ module.exports = {
     REPORTS: "/reports",
     REPORT_ID: "/report/:id",
     REPORT_EDIT_ID: "/report/edit/:id",
+    TYPE_CHARTS: "/charts/type",
 }
