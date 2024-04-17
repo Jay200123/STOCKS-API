@@ -24,6 +24,7 @@ const user = require("./routes/user");
 const equipment = require("./routes/equipment");
 const logbook = require("./routes/logbook");
 const report = require("./routes/report");
+const chart = require("./routes/chart");
 
 const connectDB = require("./config/connect");
 connectDB();
@@ -41,7 +42,8 @@ app.use(
   user,
   equipment,
   logbook,
-  report
+  report,
+  chart,
 );
 
 app.get("/", (req, res) => {
@@ -57,8 +59,8 @@ app.get("/truncate", async (req, res) => {
     // await Inventory.deleteMany({});
     // await Transaction.deleteMany({});
     await LogBook.deleteMany({});
-    // await Equipment.deleteMany({});
-    // await Report.deleteMany({});
+    await Equipment.deleteMany({});
+    await Report.deleteMany({});
     const message = "All collections truncated successfully";
     res.status(STATUSCODE.SUCCESS).json({ message });
   } catch (error) {
