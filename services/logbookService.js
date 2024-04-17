@@ -51,21 +51,33 @@ exports.createLogsData = async (req, res) => {
   });
 
   try {
-    const newBorrowed = log?.equipment?.map((equipment) => {
-      return equipment;
-    });
-
-    for (const equipment of newBorrowed) {
+    for (const equipment of log?.equipment) {
       const equipmentId = equipment?.equipment;
       const borrowedQty = equipment?.borrow_quantity;
 
       const borrowedEquipment = await Equipment.findById(equipmentId);
 
-      let { quantity } = borrowedEquipment;
+      if(!borrowedEquipment){
+        throw new ErrorHandler("Equipment not Found")
+      }
+
+      let { quantity, borrow_qty } = borrowedEquipment;
 
       let newQuantity = quantity - borrowedQty;
-      borrowedEquipment.quantity = newQuantity;
-      await borrowedEquipment.save();
+      let newBorrowed = borrow_qty + borrowedQty;
+
+      const updateEquipment = await Equipment.findByIdAndUpdate(
+        equipmentId,
+        {
+          quantity: newQuantity,
+          borrow_qty: newBorrowed,
+
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
     }
   } catch (err) {
     throw new ErrorHandler(err);
@@ -92,7 +104,6 @@ exports.updateLogsData = async (req, res, id) => {
   }
 
   const dateToday = new Date();
-
   const updateLogBook = await LogBook.findByIdAndUpdate(
     id,
     {
@@ -133,23 +144,34 @@ exports.updateLogsData = async (req, res, id) => {
       const equipmentId = equipment;
       const newEquipment = await Equipment.findById(equipmentId).lean().exec();
 
-      let { missing_qty, damage_qty } = newEquipment;
+      let { missing_qty, damage_qty, borrow_qty, quantity } = newEquipment;
 
       let newMissingQty = (missing_qty = missing_quantity);
       let newDamageQty = (damage_qty = damage_quantity);
+
+
+      let newFoundQty = 0;
+      let returnQuantity = 0;
+      const isFound = status == "Found" && updateLogBook.status === "Returned";
+
+      if(isFound){
+        newFoundQty = borrow_quantity - borrow_qty; 
+        returnQuantity = quantity + borrow_quantity;
+      }
 
       const updateEquipment = await Equipment.findByIdAndUpdate(
         equipmentId,
         {
           missing_qty: newMissingQty,
           damage_qty: newDamageQty,
+          borrow_qty: newFoundQty,
+          quantity: returnQuantity,
         },
         {
           new: true,
           runValidators: true,
         }
       );
-
       const isMissing = status === "Missing" && missing_quantity >= 1;
       const isDamage = status === "Damage" && damage_quantity >= 1;
       const isMissingAndDamage =
@@ -160,7 +182,6 @@ exports.updateLogsData = async (req, res, id) => {
       const insertDate = isMissing || isMissingAndDamage ? dateToday : "";
 
       let statusReport = "";
-
       if(isMissing){
         statusReport = "Missing";
       }else if(isDamage){
