@@ -10,11 +10,11 @@ const equipmentSchema = new mongoose.Schema({
   equipment_status: {
     type: String,
     enum: ["Found", "Missing", "Lost"],
-    default:"Found",
+    default: "Found",
   },
   equipment_price: {
     type: Number,
-    required:[true, "Equipment price required"],
+    required: [true, "Equipment price required"],
     default: 0,
   },
   quantity: {
@@ -32,11 +32,16 @@ const equipmentSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
+  borrow_qty: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
   status: {
     type: String,
-    enum:["Available", "Not Available"],
+    enum: ["Available", "Not Available"],
     default: "Available",
-  }
+  },
 });
 
 module.exports = mongoose.model(RESOURCE.EQUIPMENT, equipmentSchema);
