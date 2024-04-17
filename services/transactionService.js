@@ -4,9 +4,14 @@ const Product = require("../models/product");
 const Inventory = require("../models/inventory");
 const User = require("../models/user");
 const ErrorHandler = require("../utils/errorHandler");
+const { RESOURCE } = require("../constants/index");
 
 exports.getAllTransactionData = async () => {
   const transaction = await Transaction.find()
+    .populate({
+      path: RESOURCE.SERVICE,
+      select: "service_name type"
+    })
     .collation({ locale: "en" })
     .lean()
     .exec();
@@ -88,18 +93,18 @@ exports.createTransactionData = async (req, res) => {
         let reducedQuantity = product.quantity;
         let usedQty = 0;
         let emptyVolume = newVolume - consumeSession;
-        
+
         const isEmpty = emptyVolume === 0;
         if (isEmpty) {
-          restock = (productStock.current_volume = productStock.product_volume);
-          reducedQuantity = (productStock.quantity -= 1);
+          restock = productStock.current_volume = productStock.product_volume;
+          reducedQuantity = productStock.quantity -= 1;
           usedQty = 1;
         }
 
         const isLeft = consumeSession > newVolume;
         if (isLeft) {
-          restock = (productStock.current_volume = productStock.product_volume);
-          reducedQuantity = (productStock.quantity -= 1);
+          restock = productStock.current_volume = productStock.product_volume;
+          reducedQuantity = productStock.quantity -= 1;
           usedQty = 1;
           const leftVolume = consumeSession * 0.5;
           newVolume = productStock.current_volume - leftVolume;
